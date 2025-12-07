@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>致我最爱的人</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-image: linear-gradient(to top, #fad0c4 0%, #ffd1ff 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 爱心动画区域 */
+        .heart-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            animation: beat 1s infinite;
+        }
+
+        .heart {
+            background-color: #ff4d4d;
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            top: 0;
+            left: 25px;
+            transform: rotate(45deg);
+        }
+
+        .heart::before, .heart::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #ff4d4d;
+            border-radius: 50%;
+        }
+
+        .heart::before {
+            left: -25px;
+        }
+
+        .heart::after {
+            top: -25px;
+        }
+
+        @keyframes beat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* 文字区域 */
+        .content {
+            margin-top: 50px;
+            text-align: center;
+            color: #333;
+            z-index: 10;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ff4d4d;
+        }
+
+        .text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            min-height: 60px;
+        }
+
+        /* 按钮区域 */
+        .btn-group {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+        }
+
+        button {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-yes {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
+        .btn-yes:hover {
+            background-color: #ff3333;
+            transform: scale(1.05);
+        }
+
+        .btn-no {
+            background-color: #fff;
+            color: #666;
+            position: relative; /* 初始相对定位 */
+        }
+
+        /* 成功后的弹窗遮罩 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            animation: popIn 0.3s ease;
+        }
+
+        .modal h2 {
+            color: #ff4d4d;
+            margin-bottom: 10px;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="heart-wrapper">
+        <div class="heart"></div>
+    </div>
+
+    <div class="content">
+        <h1 class="title">小姐姐/小哥哥，我有话对你说</h1>
+        <p class="text" id="typewriter"></p>
+        
+        <div class="btn-group">
+            <button class="btn-yes" onclick="loveSuccess()">好呀，答应你</button>
+            <button class="btn-no" id="btnNo" onmouseover="runAway()" ontouchstart="runAway()">残忍拒绝</button>
+        </div>
+    </div>
+
+    <!-- 成功后的弹窗 -->
+    <div class="overlay" id="successOverlay">
+        <div class="modal">
+            <h2>🎉 太棒了！ 🎉</h2>
+            <p>我就知道你会答应的！</p>
+            <p>余生请多指教 ❤️</p>
+            <div style="margin-top: 20px; font-size: 40px;">💑</div>
+        </div>
+    </div>
+
+    <script>
+        // --- 配置区域：在这里修改你想说的话 ---
+        const loveText = "遇见你是我所有美好故事的开始，\n不仅是因为你的样子，\n还因为和你在一起时我的样子。\n\n做我女朋友好吗？";
+        // -------------------------------------
+
+        // 打字机效果逻辑
+        const textElement = document.getElementById('typewriter');
+        let index = 0;
+
+        function typeWriter() {
+            if (index < loveText.length) {
+                // 处理换行符
+                if (loveText.charAt(index) === '\n') {
+                    textElement.innerHTML += '<br>';
+                } else {
+                    textElement.innerHTML += loveText.charAt(index);
+                }
+                index++;
+                setTimeout(typeWriter, 100); // 打字速度，越小越快
+            }
+        }
+
+        // 页面加载完成后开始打字
+        window.onload = typeWriter;
+
+        // "拒绝"按钮逃跑逻辑
+        function runAway() {
+            const btnNo = document.getElementById('btnNo');
+            
+            // 获取可视窗口的宽高
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            // 生成随机位置
+            const randomX = Math.floor(Math.random() * (windowWidth - 100));
+            const randomY = Math.floor(Math.random() * (windowHeight - 50));
+            
+            // 改为绝对定位并移动
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+        }
+
+        // "同意"按钮逻辑
+        function loveSuccess() {
+            document.getElementById('successOverlay').style.display = 'flex';
+            
+            // 这里可以添加更多特效，比如放烟花等
+            createHearts();
+        }
+
+        // 背景飘落小爱心特效
+        function createHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.style.position = 'fixed';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = '-20px';
+                heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+                heart.style.animation = 'fall 3s linear';
+                heart.style.opacity = Math.random();
+                document.body.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 3000);
+            }, 100);
+
+            // 动态添加下落动画样式
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes fall {
+                    to { transform: translateY(100vh); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    </script>
+</body>
+</html>
